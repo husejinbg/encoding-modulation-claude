@@ -19,6 +19,7 @@ interface AnalogPlotProps {
   smooth?: boolean; // If true, use smooth interpolation; if false, use step diagram
   bitDuration?: number; // Duration of each bit in seconds (for bit boundaries)
   numBits?: number; // Number of bits (for bit boundaries)
+  yDomain?: [number, number]; // Optional fixed y-axis domain for synchronization
 }
 
 export const AnalogPlot: React.FC<AnalogPlotProps> = ({
@@ -28,14 +29,20 @@ export const AnalogPlot: React.FC<AnalogPlotProps> = ({
   numSamples = 0,
   smooth = true,
   bitDuration,
-  numBits
+  numBits,
+  yDomain
 }) => {
-  // Calculate domain with padding
-  const values = data.map(p => p.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = (max - min) * 0.1 || 1; // 10% padding or 1 if range is 0
-  const domain: [number, number] = [min - padding, max + padding];
+  // Calculate domain with padding (or use provided domain)
+  let domain: [number, number];
+  if (yDomain) {
+    domain = yDomain;
+  } else {
+    const values = data.map(p => p.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const padding = (max - min) * 0.1 || 1; // 10% padding or 1 if range is 0
+    domain = [min - padding, max + padding];
+  }
 
   // Calculate if scrolling is needed
   const maxVisibleSamples = 8;

@@ -16,17 +16,21 @@ interface UseTransmissionResult {
   reset: () => void;
   hasViolation: boolean | null;
   setHasViolation: (value: boolean | null) => void;
+  elapsedTime: number | null;
 }
 
 export function useTransmission(): UseTransmissionResult {
   const [chartData, setChartData] = useState<ChartDataset | null>(null);
   const [hasViolation, setHasViolation] = useState<boolean | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
   const transmit = useCallback((
     originalData: BinaryData,
     encode: (data: BinaryData) => EncodedSignal,
     decode: (signal: EncodedSignal) => BinaryData
   ) => {
+    const startTime = performance.now();
+
     // Encode
     const encodedSignal = encode(originalData);
 
@@ -41,11 +45,15 @@ export function useTransmission(): UseTransmissionResult {
     };
 
     setChartData(dataset);
+
+    const endTime = performance.now();
+    setElapsedTime(endTime - startTime);
   }, []);
 
   const reset = useCallback(() => {
     setChartData(null);
     setHasViolation(null);
+    setElapsedTime(null);
   }, []);
 
   return {
@@ -54,5 +62,6 @@ export function useTransmission(): UseTransmissionResult {
     reset,
     hasViolation,
     setHasViolation,
+    elapsedTime,
   };
 }

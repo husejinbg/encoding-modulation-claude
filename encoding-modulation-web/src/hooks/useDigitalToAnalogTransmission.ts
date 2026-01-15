@@ -8,6 +8,7 @@ interface UseDigitalToAnalogTransmissionResult {
   chartData: DigitalToAnalogChartDataset | null;
   transmit: (params: TransmissionParams) => void;
   reset: () => void;
+  elapsedTime: number | null;
 }
 
 interface TransmissionParams {
@@ -27,8 +28,11 @@ interface TransmissionParams {
  */
 export function useDigitalToAnalogTransmission(): UseDigitalToAnalogTransmissionResult {
   const [chartData, setChartData] = useState<DigitalToAnalogChartDataset | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
   const transmit = useCallback((params: TransmissionParams) => {
+    const startTime = performance.now();
+
     const { binaryData, modulator, bitDuration, samplesPerBit = 100 } = params;
 
     // 1. Modulate: Binary Data → Signal Stream (array of Sinusoid objects)
@@ -48,11 +52,15 @@ export function useDigitalToAnalogTransmission(): UseDigitalToAnalogTransmission
     };
 
     setChartData(dataset);
+
+    const endTime = performance.now();
+    setElapsedTime(endTime - startTime);
   }, []);
 
   const reset = useCallback(() => {
     setChartData(null);
+    setElapsedTime(null);
   }, []);
 
-  return { chartData, transmit, reset };
+  return { chartData, transmit, reset, elapsedTime };
 }

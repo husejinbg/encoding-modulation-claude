@@ -28,7 +28,8 @@ export const DigitalToDigital: React.FC = () => {
     transmit,
     reset,
     hasViolation,
-    setHasViolation
+    setHasViolation,
+    elapsedTime
   } = useTransmission();
 
   const handleTransmit = () => {
@@ -70,6 +71,12 @@ export const DigitalToDigital: React.FC = () => {
         />
 
         <TransmitButton onClick={handleTransmit} />
+
+        {elapsedTime !== null && (
+          <div className="benchmark-info" style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+            Execution time: {elapsedTime.toFixed(2)} ms
+          </div>
+        )}
 
         {hasViolation !== null && encoderInfo.canDetectViolations && (
           <div className={`violation-alert ${hasViolation ? 'error' : 'success'}`}>

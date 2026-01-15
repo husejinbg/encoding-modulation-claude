@@ -39,7 +39,7 @@ export const AnalogToDigital: React.FC = () => {
   // Received signal rendering option
   const [receivedSignalSmooth, setReceivedSignalSmooth] = useState<boolean>(false);
 
-  const { chartData, numSamples, numBits, transmit, reset } = useAnalogTransmission();
+  const { chartData, numSamples, numBits, transmit, reset, elapsedTime } = useAnalogTransmission();
 
   const handleTransmit = () => {
     try {
@@ -154,6 +154,12 @@ export const AnalogToDigital: React.FC = () => {
 
         <TransmitButton onClick={handleTransmit} />
 
+        {elapsedTime !== null && (
+          <div className="benchmark-info" style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+            Execution time: {elapsedTime.toFixed(2)} ms
+          </div>
+        )}
+
         {validationError && <div className="error-message">{validationError}</div>}
         {nyquistWarning && <div className="warning-message">{nyquistWarning}</div>}
       </div>
@@ -172,23 +178,40 @@ export const AnalogToDigital: React.FC = () => {
       <div className="plots-container">
         {chartData ? (
           <>
-            <AnalogPlot
-              data={chartData.sendAnalog}
-              title="Send Analog Signal"
-              numSamples={numSamples}
-              smooth={true}
-            />
-            <DigitalPlot
-              data={chartData.encodedDigital}
-              title="Encoded Digital Signal"
-              numBits={numBits}
-            />
-            <AnalogPlot
-              data={chartData.receivedAnalog}
-              title="Received Analog Signal"
-              numSamples={numSamples}
-              smooth={receivedSignalSmooth}
-            />
+            {(() => {
+              // Calculate unified y-axis domain for both analog plots
+              const sendValues = chartData.sendAnalog.map(p => p.value);
+              const receivedValues = chartData.receivedAnalog.map(p => p.value);
+              const allValues = [...sendValues, ...receivedValues];
+              const min = Math.min(...allValues);
+              const max = Math.max(...allValues);
+              const padding = (max - min) * 0.1 || 1;
+              const unifiedDomain: [number, number] = [min - padding, max + padding];
+
+              return (
+                <>
+                  <AnalogPlot
+                    data={chartData.sendAnalog}
+                    title="Send Analog Signal"
+                    numSamples={numSamples}
+                    smooth={true}
+                    yDomain={unifiedDomain}
+                  />
+                  <DigitalPlot
+                    data={chartData.encodedDigital}
+                    title="Encoded Digital Signal"
+                    numBits={numBits}
+                  />
+                  <AnalogPlot
+                    data={chartData.receivedAnalog}
+                    title="Received Analog Signal"
+                    numSamples={numSamples}
+                    smooth={receivedSignalSmooth}
+                    yDomain={unifiedDomain}
+                  />
+                </>
+              );
+            })()}
           </>
         ) : (
           <div className="empty-state">

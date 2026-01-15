@@ -13,6 +13,7 @@ interface UseAnalogTransmissionResult {
   numBits: number;
   transmit: (params: TransmissionParams) => void;
   reset: () => void;
+  elapsedTime: number | null;
 }
 
 interface TransmissionParams {
@@ -32,8 +33,11 @@ export function useAnalogTransmission(): UseAnalogTransmissionResult {
   const [chartData, setChartData] = useState<AnalogToDigitalChartDataset | null>(null);
   const [numSamples, setNumSamples] = useState<number>(0);
   const [numBits, setNumBits] = useState<number>(0);
+  const [elapsedTime, setElapsedTime] = useState<number | null>(null);
 
   const transmit = useCallback((params: TransmissionParams) => {
+    const startTime = performance.now();
+
     const { sinusoidParams, duration, samplingRate, codec, encoder } = params;
 
     // 1. Create composite signal from sinusoid parameters
@@ -82,15 +86,19 @@ export function useAnalogTransmission(): UseAnalogTransmissionResult {
     // Store counts for scrolling calculation
     setNumSamples(samples.length);
     setNumBits(binaryData.length);
+
+    const endTime = performance.now();
+    setElapsedTime(endTime - startTime);
   }, []);
 
   const reset = useCallback(() => {
     setChartData(null);
     setNumSamples(0);
     setNumBits(0);
+    setElapsedTime(null);
   }, []);
 
-  return { chartData, numSamples, numBits, transmit, reset };
+  return { chartData, numSamples, numBits, transmit, reset, elapsedTime };
 }
 
 /**

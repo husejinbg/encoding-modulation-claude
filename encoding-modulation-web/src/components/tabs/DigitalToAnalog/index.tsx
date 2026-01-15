@@ -34,7 +34,7 @@ export const DigitalToAnalog: React.FC = () => {
   const [transmittedBitDuration, setTransmittedBitDuration] = useState<number>(0.001);
   const [transmittedNumBits, setTransmittedNumBits] = useState<number>(7);
 
-  const { chartData, transmit, reset } = useDigitalToAnalogTransmission();
+  const { chartData, transmit, reset, elapsedTime } = useDigitalToAnalogTransmission();
 
   const handleTransmit = () => {
     try {
@@ -129,6 +129,12 @@ export const DigitalToAnalog: React.FC = () => {
         />
 
         <TransmitButton onClick={handleTransmit} />
+
+        {elapsedTime !== null && (
+          <div className="benchmark-info" style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+            Execution time: {elapsedTime.toFixed(2)} ms
+          </div>
+        )}
       </div>
 
       <div className="plots-container">
