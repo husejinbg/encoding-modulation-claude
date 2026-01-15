@@ -92,6 +92,8 @@ export const DigitalToDigital: React.FC = () => {
               data={chartData.encodedSignal}
               title={`Encoded Signal (${encoderInfo.displayName})`}
               rawSignal={chartData.encodedSignal.map(p => p.level) as EncodedSignal}
+              numBits={chartData.sendData.length}
+              producesDoubleLength={encoderInfo.producesDoubleLength}
             />
 
             <BinaryPlot

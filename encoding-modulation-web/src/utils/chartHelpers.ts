@@ -4,6 +4,7 @@ import type {
   BinaryDataPoint,
   DigitalSignalPoint
 } from '../types/signal.types';
+import type { AnalogSignal } from '../types/analog.types';
 
 /**
  * Transforms binary data into chart-ready format for bar/scatter plot
@@ -59,4 +60,15 @@ export function getSignalDomain(signal: EncodedSignal): [number, number] {
   } else {
     return [-1.5, 1.5]; // Default range
   }
+}
+
+/**
+ * Calculates optimal Y-axis domain for analog signal plot
+ */
+export function getAnalogDomain(signal: AnalogSignal): [number, number] {
+  const values = signal.map(p => p.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const padding = (max - min) * 0.1 || 1; // 10% padding or 1 if range is 0
+  return [min - padding, max + padding];
 }

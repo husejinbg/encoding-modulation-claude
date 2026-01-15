@@ -79,10 +79,15 @@
 }
 
 .plots-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   margin-bottom: 30px;
+}
+
+.digital-to-digital-tab .binary-plot,
+.digital-to-digital-tab .digital-plot {
+  width: 100%;
 }
 
 .binary-plot h3,
@@ -126,8 +131,4 @@
   font-style: italic;
 }
 
-@media (max-width: 1200px) {
-  .plots-container {
-    grid-template-columns: 1fr;
-  }
-}
+/* Horizontal scrolling is maintained on all screen sizes */
