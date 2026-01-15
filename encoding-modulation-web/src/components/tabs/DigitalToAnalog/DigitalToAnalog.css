@@ -1,0 +1,145 @@
+.digital-to-analog-tab {
+  padding: 20px;
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.modulator-select,
+.binary-input,
+.bit-duration-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modulator-select label,
+.binary-input label,
+.bit-duration-input label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.modulator-select select,
+.binary-input input,
+.bit-duration-input input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 150px;
+}
+
+.modulator-select select:focus,
+.binary-input input:focus,
+.bit-duration-input input:focus,
+.parameter-field input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modulator-parameters {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.parameter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.parameter-field label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.parameter-field input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 150px;
+}
+
+.transmit-button {
+  padding: 10px 24px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background-color 0.2s;
+}
+
+.transmit-button:hover {
+  background-color: #2563eb;
+}
+
+.transmit-button:active {
+  background-color: #1d4ed8;
+}
+
+.error-message {
+  padding: 10px 16px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.plots-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.config-panel {
+  background-color: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 20px;
+}
+
+.config-panel h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.config-panel p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.config-panel strong {
+  font-weight: 600;
+  color: #1f2937;
+}

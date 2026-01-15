@@ -13,6 +13,12 @@ export interface AnalogToDigitalChartDataset {
   receivedAnalog: AnalogSignal;         // Reconstructed analog signal
 }
 
+// Re-export from modulator.types for convenience
+export type { DigitalToAnalogChartDataset } from './modulator.types';
+
+// Re-export from analog-modulator.types for convenience
+export type { AnalogToAnalogChartDataset } from './analog-modulator.types';
+
 export interface ChartConfig {
   width?: number;
   height?: number;

@@ -13,8 +13,8 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   const tabs = [
     { id: 'digital-to-digital', label: 'Digital → Digital', enabled: true },
     { id: 'analog-to-digital', label: 'Analog → Digital', enabled: true },
-    { id: 'digital-to-analog', label: 'Digital → Analog', enabled: false },
-    { id: 'analog-to-analog', label: 'Analog → Analog', enabled: false },
+    { id: 'digital-to-analog', label: 'Digital → Analog', enabled: true },
+    { id: 'analog-to-analog', label: 'Analog → Analog', enabled: true },
   ];
 
   return (

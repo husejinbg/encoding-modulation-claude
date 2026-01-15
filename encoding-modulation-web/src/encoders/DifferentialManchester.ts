@@ -9,7 +9,8 @@ export class DifferentialManchester extends BaseEncoder {
   encode(data: BinaryData): EncodedSignal {
     this.validateBinaryData(data);
 
-    let lastLevel: SignalLevelValue = SignalLevel.LOW;
+    // Initial previous level is HIGH
+    let lastLevel: SignalLevelValue = SignalLevel.HIGH;
     const result: EncodedSignal = [];
 
     for (const bit of data) {
@@ -31,7 +32,8 @@ export class DifferentialManchester extends BaseEncoder {
     this.validateSignal(signal);
 
     const result: BinaryData = [];
-    let previousLevel: SignalLevelValue = SignalLevel.LOW;
+    // Initial previous level is HIGH
+    let previousLevel: SignalLevelValue = SignalLevel.HIGH;
 
     for (let i = 0; i < signal.length; i += 2) {
       const firstHalf = signal[i];

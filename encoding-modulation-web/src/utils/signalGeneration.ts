@@ -129,3 +129,41 @@ export class CompositeSignal {
     return points;
   }
 }
+
+/**
+ * Convert modulator signal stream to continuous analog signal for plotting
+ *
+ * Each Sinusoid in the signal stream represents one bit period.
+ * This function samples each Sinusoid over its bit duration and concatenates
+ * all samples into a single continuous AnalogSignal for visualization.
+ *
+ * @param signalStream - Array of Sinusoid objects (one per bit)
+ * @param bitDuration - Duration of each bit in seconds
+ * @param samplesPerBit - Number of samples per bit for smooth plotting (default: 100)
+ * @returns AnalogSignal with time-value pairs for plotting
+ */
+export function modulatorSignalToAnalog(
+  signalStream: Sinusoid[],
+  bitDuration: number,
+  samplesPerBit: number = 100
+): AnalogSignal {
+  const points: AnalogSignal = [];
+
+  signalStream.forEach((sinusoid, bitIndex) => {
+    const bitStartTime = bitIndex * bitDuration;
+
+    // Generate samples for this bit period
+    for (let i = 0; i < samplesPerBit; i++) {
+      // Absolute time for the plot
+      const t = bitStartTime + (i / samplesPerBit) * bitDuration;
+
+      // Time relative to bit start (for sinusoid evaluation)
+      const relativeT = (i / samplesPerBit) * bitDuration;
+
+      // Evaluate sinusoid at relative time
+      points.push({ time: t, value: sinusoid.evaluate(relativeT) });
+    }
+  });
+
+  return points;
+}

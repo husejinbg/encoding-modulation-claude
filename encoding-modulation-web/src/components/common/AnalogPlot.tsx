@@ -6,7 +6,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ReferenceLine
 } from 'recharts';
 import type { AnalogSignal } from '../../types/analog.types';
 
@@ -16,6 +17,8 @@ interface AnalogPlotProps {
   height?: number;
   numSamples?: number; // Number of sample points for scrolling
   smooth?: boolean; // If true, use smooth interpolation; if false, use step diagram
+  bitDuration?: number; // Duration of each bit in seconds (for bit boundaries)
+  numBits?: number; // Number of bits (for bit boundaries)
 }
 
 export const AnalogPlot: React.FC<AnalogPlotProps> = ({
@@ -23,7 +26,9 @@ export const AnalogPlot: React.FC<AnalogPlotProps> = ({
   title,
   height = 300,
   numSamples = 0,
-  smooth = true
+  smooth = true,
+  bitDuration,
+  numBits
 }) => {
   // Calculate domain with padding
   const values = data.map(p => p.value);
@@ -37,6 +42,14 @@ export const AnalogPlot: React.FC<AnalogPlotProps> = ({
   const sampleWidth = 80; // Width per sample in pixels
   const needsScroll = numSamples > maxVisibleSamples;
   const totalChartWidth = numSamples * sampleWidth;
+
+  // Generate bit boundary lines
+  const bitBoundaries: number[] = [];
+  if (bitDuration && numBits && numBits > 0) {
+    for (let i = 1; i < numBits; i++) {
+      bitBoundaries.push(i * bitDuration);
+    }
+  }
 
   return (
     <div className="analog-plot">
@@ -62,6 +75,17 @@ export const AnalogPlot: React.FC<AnalogPlotProps> = ({
                 width={50}
                 label={{ value: 'Amplitude', angle: -90, position: 'insideLeft' }}
               />
+
+              {/* Bit boundary lines */}
+              {bitBoundaries.map((time) => (
+                <ReferenceLine
+                  key={`bit-${time}`}
+                  x={time}
+                  stroke="#9ca3af"
+                  strokeDasharray="5 5"
+                  opacity={0.5}
+                />
+              ))}
 
               <Tooltip
                 formatter={(value: number | undefined) =>
