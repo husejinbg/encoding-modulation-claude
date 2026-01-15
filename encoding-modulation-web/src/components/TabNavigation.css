@@ -1,0 +1,44 @@
+.tab-navigation {
+  display: flex;
+  gap: 4px;
+  background-color: #f3f4f6;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover:not(.disabled) {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.tab.active {
+  background-color: white;
+  color: #3b82f6;
+  font-weight: 600;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tab.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.coming-soon {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
+}
