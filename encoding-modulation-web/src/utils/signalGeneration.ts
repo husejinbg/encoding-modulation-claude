@@ -165,5 +165,12 @@ export function modulatorSignalToAnalog(
     }
   });
 
+  // Add final point at exact end time to avoid floating-point precision issues
+  if (signalStream.length > 0) {
+    const lastSinusoid = signalStream[signalStream.length - 1];
+    const exactEndTime = bitDuration * signalStream.length;
+    points.push({ time: exactEndTime, value: lastSinusoid.evaluate(bitDuration) });
+  }
+
   return points;
 }
