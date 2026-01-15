@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { EncoderSelect } from './EncoderSelect';
 import { BinaryInput } from './BinaryInput';
 import { TransmitButton } from './TransmitButton';
@@ -11,10 +11,21 @@ import { encoderInfoMap } from '../../../encoders';
 import type { EncodedSignal } from '../../../types/signal.types';
 import './DigitalToDigital.css';
 
+/**
+ * Digital-to-Digital encoding visualization tab.
+ *
+ * Allows users to:
+ * - Enter binary data
+ * - Select an encoder (NRZ-L, NRZ-I, Manchester, etc.)
+ * - Visualize the encoding/decoding process
+ * - Detect bipolar violations (for applicable encoders)
+ */
 export const DigitalToDigital: React.FC = () => {
+  // Input state
   const [binaryInput, setBinaryInput] = useState('1101001');
   const [inputError, setInputError] = useState<string | null>(null);
 
+  // Encoder hook provides encode/decode functions
   const {
     selectedEncoder,
     setSelectedEncoder,
@@ -23,6 +34,7 @@ export const DigitalToDigital: React.FC = () => {
     checkViolations
   } = useEncoder();
 
+  // Transmission hook manages chart data and timing
   const {
     chartData,
     transmit,
@@ -32,7 +44,8 @@ export const DigitalToDigital: React.FC = () => {
     elapsedTime
   } = useTransmission();
 
-  const handleTransmit = () => {
+  // Memoize handleTransmit to prevent unnecessary re-renders of child components
+  const handleTransmit = useCallback(() => {
     try {
       // Parse and validate input
       const binaryData = parseBinaryString(binaryInput);
@@ -40,10 +53,10 @@ export const DigitalToDigital: React.FC = () => {
       // Clear previous errors
       setInputError(null);
 
-      // Perform transmission
+      // Perform transmission (encode → decode cycle)
       transmit(binaryData, encode, decode);
 
-      // Check for violations (if applicable)
+      // Check for bipolar violations (if encoder supports it)
       const encodedSignal = encode(binaryData);
       const violation = checkViolations(encodedSignal);
       setHasViolation(violation);
@@ -52,9 +65,31 @@ export const DigitalToDigital: React.FC = () => {
       setInputError(error instanceof Error ? error.message : 'Invalid input');
       reset();
     }
-  };
+  }, [binaryInput, encode, decode, transmit, checkViolations, setHasViolation, reset]);
 
-  const encoderInfo = encoderInfoMap[selectedEncoder];
+  // Memoize encoder info lookup
+  const encoderInfo = useMemo(
+    () => encoderInfoMap[selectedEncoder],
+    [selectedEncoder]
+  );
+
+  // Memoize raw signal extraction to avoid creating new array on every render
+  // This is needed for DigitalPlot's domain calculation
+  const rawSignal = useMemo((): EncodedSignal | undefined => {
+    if (!chartData) return undefined;
+    // Extract just the level values for domain calculation
+    const levels = new Array<number>(chartData.encodedSignal.length);
+    for (let i = 0; i < chartData.encodedSignal.length; i++) {
+      levels[i] = chartData.encodedSignal[i].level;
+    }
+    return levels as EncodedSignal;
+  }, [chartData]);
+
+  // Memoize num bits to avoid recalculation
+  const numBits = useMemo(
+    () => chartData?.sendData.length ?? 0,
+    [chartData]
+  );
 
   return (
     <div className="digital-to-digital-tab">
@@ -72,12 +107,14 @@ export const DigitalToDigital: React.FC = () => {
 
         <TransmitButton onClick={handleTransmit} />
 
+        {/* Execution time display */}
         {elapsedTime !== null && (
           <div className="benchmark-info" style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
             Execution time: {elapsedTime.toFixed(2)} ms
           </div>
         )}
 
+        {/* Violation detection alert (for Bipolar-AMI and Pseudoternary) */}
         {hasViolation !== null && encoderInfo.canDetectViolations && (
           <div className={`violation-alert ${hasViolation ? 'error' : 'success'}`}>
             {hasViolation
@@ -98,8 +135,8 @@ export const DigitalToDigital: React.FC = () => {
             <DigitalPlot
               data={chartData.encodedSignal}
               title={`Encoded Signal (${encoderInfo.displayName})`}
-              rawSignal={chartData.encodedSignal.map(p => p.level) as EncodedSignal}
-              numBits={chartData.sendData.length}
+              rawSignal={rawSignal}
+              numBits={numBits}
               producesDoubleLength={encoderInfo.producesDoubleLength}
             />
 

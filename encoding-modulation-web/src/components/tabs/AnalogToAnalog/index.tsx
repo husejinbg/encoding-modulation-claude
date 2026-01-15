@@ -39,7 +39,7 @@ export const AnalogToAnalog: React.FC = () => {
   const [carrierWarning, setCarrierWarning] = useState<string | null>(null);
 
   // Transmission hook
-  const { chartData, numSamples, transmit, reset } = useAnalogToAnalogTransmission();
+  const { chartData, transmit, reset } = useAnalogToAnalogTransmission();
 
   const handleModulatorChange = (modulator: AnalogModulatorId) => {
     setSelectedModulator(modulator);
@@ -195,7 +195,6 @@ export const AnalogToAnalog: React.FC = () => {
             <AnalogPlot
               data={chartData.sendAnalog}
               title="Send Analog Signal"
-              numSamples={numSamples}
               smooth={true}
             />
           </div>
@@ -204,7 +203,6 @@ export const AnalogToAnalog: React.FC = () => {
             <AnalogPlot
               data={chartData.modulatedAnalog}
               title="Modulated Analog Signal"
-              numSamples={numSamples}
               smooth={true}
             />
           </div>
@@ -213,7 +211,6 @@ export const AnalogToAnalog: React.FC = () => {
             <AnalogPlot
               data={chartData.receivedAnalog}
               title="Received Analog Signal"
-              numSamples={numSamples}
               smooth={true}
             />
           </div>

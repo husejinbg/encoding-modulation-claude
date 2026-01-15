@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CodecSelect } from './CodecSelect';
 import { SinusoidInputs } from './SinusoidInputs';
 import { CodecParameters } from './CodecParameters';
@@ -9,6 +9,7 @@ import { encoders, encoderList } from '../../../encoders';
 import { PCM, DM, codecInfoMap } from '../../../codecs';
 import { useAnalogTransmission } from '../../../hooks/useAnalogTransmission';
 import { CompositeSignal, Sinusoid } from '../../../utils/signalGeneration';
+import { getUnifiedAnalogDomain } from '../../../utils/chartHelpers';
 import type { SinusoidParams } from '../../../types/analog.types';
 import type { CodecId } from '../../../types/codec.types';
 import type { EncoderId } from '../../../encoders';
@@ -108,6 +109,13 @@ export const AnalogToDigital: React.FC = () => {
 
   const codecInfo = codecInfoMap[selectedCodec];
 
+  // Memoize unified Y-axis domain for both analog plots
+  // Uses optimized single-pass algorithm to avoid spread operator crash with large arrays
+  const unifiedDomain = useMemo((): [number, number] => {
+    if (!chartData) return [-1, 1];
+    return getUnifiedAnalogDomain([chartData.sendAnalog, chartData.receivedAnalog]);
+  }, [chartData]);
+
   return (
     <div className="analog-to-digital-tab">
       <div className="controls">
@@ -178,40 +186,25 @@ export const AnalogToDigital: React.FC = () => {
       <div className="plots-container">
         {chartData ? (
           <>
-            {(() => {
-              // Calculate unified y-axis domain for both analog plots
-              const sendValues = chartData.sendAnalog.map(p => p.value);
-              const receivedValues = chartData.receivedAnalog.map(p => p.value);
-              const allValues = [...sendValues, ...receivedValues];
-              const min = Math.min(...allValues);
-              const max = Math.max(...allValues);
-              const padding = (max - min) * 0.1 || 1;
-              const unifiedDomain: [number, number] = [min - padding, max + padding];
-
-              return (
-                <>
-                  <AnalogPlot
-                    data={chartData.sendAnalog}
-                    title="Send Analog Signal"
-                    numSamples={numSamples}
-                    smooth={true}
-                    yDomain={unifiedDomain}
-                  />
-                  <DigitalPlot
-                    data={chartData.encodedDigital}
-                    title="Encoded Digital Signal"
-                    numBits={numBits}
-                  />
-                  <AnalogPlot
-                    data={chartData.receivedAnalog}
-                    title="Received Analog Signal"
-                    numSamples={numSamples}
-                    smooth={receivedSignalSmooth}
-                    yDomain={unifiedDomain}
-                  />
-                </>
-              );
-            })()}
+            <AnalogPlot
+              data={chartData.sendAnalog}
+              title="Send Analog Signal"
+              numSamples={numSamples}
+              smooth={true}
+              yDomain={unifiedDomain}
+            />
+            <DigitalPlot
+              data={chartData.encodedDigital}
+              title="Encoded Digital Signal"
+              numBits={numBits}
+            />
+            <AnalogPlot
+              data={chartData.receivedAnalog}
+              title="Received Analog Signal"
+              numSamples={numSamples}
+              smooth={receivedSignalSmooth}
+              yDomain={unifiedDomain}
+            />
           </>
         ) : (
           <div className="empty-state">
